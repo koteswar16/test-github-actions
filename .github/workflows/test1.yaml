@@ -1,0 +1,12 @@
+name: My First Workflow
+on:            # Trigger: when to run
+  push:         # Run when code is pushed
+  pull_request: # Run when PR is opened
+
+jobs:           # Define jobs
+  build:
+    runs-on: ubuntu-latest   # Runner environment
+    steps:
+      - name: Run a command
+        run: echo "Hello, world!"
+      - uses: actions/checkout@v4   # Use an existing action
