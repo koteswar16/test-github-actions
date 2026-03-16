@@ -1,0 +1,55 @@
+# .github/workflows/release.yml
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Semver bump"
+        type: choice
+        options: [major, minor, patch]
+        required: true
+      dry_run:
+        description: "Do not publish, just simulate"
+        type: boolean
+        default: true
+      notes:
+        description: "Optional release notes"
+        type: string
+        required: false
+      retries:
+        description: "Retry count"
+        type: number
+        default: 0
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show inputs
+        run: |
+          echo "bump=${{ inputs.bump }}"
+          echo "dry_run=${{ inputs.dry_run }}"
+          echo "notes=${{ inputs.notes }}"
+          echo "retries=${{ inputs.retries }}"
+
+      - name: Compute next version (example)
+        id: ver
+        run: |
+          # Pretend current version is 1.2.3; replace with your logic
+          curr="1.2.3"
+          bump="${{ inputs.bump }}"
+          IFS='.' read -r MA MI PA <<< "$curr"
+          case "$bump" in
+            major) MA=$((MA+1)); MI=0; PA=0 ;;
+            minor) MI=$((MI+1)); PA=0 ;;
+            patch) PA=$((PA+1)) ;;
+          esac
+          next="$MA.$MI.$PA"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Conditionally publish
+        if: ${{ inputs.dry_run == false }}
+        run: echo "Publishing version ${{ steps.ver.outputs.next }}..."
