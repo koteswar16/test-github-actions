@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use composite action
+        uses: ./.github/actions/npm-ci-test
+        with:
+          node-version: "18"
+          working-directory: "."
+          run-lint: "true"
+
+      - name: Read composite output
+        run: echo "Tests took ${{ steps.npm.outputs.test-duration-seconds }} seconds"
+        # Tip: to reference outputs, give the previous step an id:
+        # steps.<id>.outputs.<output-name>
+        # Or capture via job outputs:
+``
