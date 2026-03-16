@@ -1,0 +1,59 @@
+name: "NPM CI & Test"
+description: "Install, cache, lint, and test a Node project"
+author: "Your Team"
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "20"
+  working-directory:
+    description: "Relative path to the project"
+    required: false
+    default: "."
+  run-lint:
+    description: "Whether to run lint"
+    required: false
+    default: "true"
+outputs:
+  test-duration-seconds:
+    description: "How long the tests took in seconds"
+    value: ${{ steps.set-output.outputs.seconds }}
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout (if action used in a fresh job)
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Lint (optional)
+      if: ${{ inputs.run-lint == 'true' }}
+      shell: bash
+      run: npm run lint --if-present
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Run tests (capture time)
+      id: test
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        start=$(date +%s)
+        npm test
+        end=$(date +%s)
+        echo "seconds=$(( end - start ))" >> "$GITHUB_OUTPUT"
+
+    - name: Set output
+      id: set-output
+      shell: bash
+      run: echo "seconds=${{ steps.test.outputs.seconds }}" >> "$GITHUB_OUTPUT"
+``
