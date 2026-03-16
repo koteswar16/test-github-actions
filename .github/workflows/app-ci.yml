@@ -1,0 +1,14 @@
+name: App CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  use-reusable:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      node-version: '18'
+      run-tests: true
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
