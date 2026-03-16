@@ -1,7 +1,6 @@
 name: App CI
 on:
   pull_request:
-
 jobs:
   use-reusable:
     uses: ./.github/workflows/reusable-ci.yml
