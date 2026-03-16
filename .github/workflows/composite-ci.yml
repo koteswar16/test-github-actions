@@ -22,4 +22,3 @@ jobs:
         # Tip: to reference outputs, give the previous step an id:
         # steps.<id>.outputs.<output-name>
         # Or capture via job outputs:
-``
