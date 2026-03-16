@@ -1,0 +1,51 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version to use
+        required: false
+        default: '20'
+        type: string
+      run-tests:
+        description: Whether to run tests
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: Token for private registry
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs['node-version'] }}
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Configure private registry (optional)
+        if: secrets.NPM_TOKEN != ''
+        run: npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Test
+        if: inputs['run-tests']
+        run: npm test
