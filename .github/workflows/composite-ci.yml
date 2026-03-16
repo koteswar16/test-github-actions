@@ -1,4 +1,4 @@
-name: CI
+name: Composite CI
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use composite action
-        uses: ./.github/actions/npm-ci-test
+        uses: ./npm-ci-test
         with:
           node-version: "18"
           working-directory: "."
