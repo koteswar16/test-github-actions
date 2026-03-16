@@ -1,7 +1,6 @@
 name: App CI
 on:
-  push:
-    branches: [ "main" ]
+  pull_request:
 
 jobs:
   use-reusable:
